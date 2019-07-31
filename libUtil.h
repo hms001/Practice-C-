@@ -60,6 +60,7 @@ using namespace std;
 
 namespace Utils
 {
+	//if firstvar is not defined, the return secvar
   static string ifnull(const char* firstvar,const char* secvar)
   {
     if(!firstvar)
@@ -69,6 +70,7 @@ namespace Utils
     return firstvar;
   }
 
+  //if input variable is undefined, return empty string
   static string nullstr(const char* var)
   {
     if(!var)
@@ -81,6 +83,7 @@ namespace Utils
     return var;
   }
 
+  //if the passed number is undefined returns zero
   static int nullnum(int *i)
   {
     if(!i)
@@ -92,6 +95,7 @@ namespace Utils
     return *i;
   }
 
+  //takes a multi-line string and then prepends 5 spaces or the string passed as indented.
   static string indentstring(string var)
   {
     string combine;
@@ -163,6 +167,7 @@ namespace Utils
     return text;
   }
 
+  //read file content
   static std::stringstream read_file(const std::string& fileName){
 //    const std::string& fileName = "RF.txt";
     std::string content;
@@ -189,6 +194,10 @@ namespace Utils
     return std::stringstream(content);
   }
 
+//Set the system message according to the level sent as parameter
+//	 1, Add the text System Error Generated
+//	 2, Add the text System Information Generated
+//	 3, Add the text System Warning Generated
   static std::string get_system_message(std::string message, int level)
   {
     std::string msg;
@@ -209,7 +218,7 @@ namespace Utils
 
   }
 
-
+//Checks whether the given text has new line or not
   static int has_new_line(std::string text)
   {
 //    stringstream check = stringstream(text);
@@ -240,6 +249,7 @@ namespace Utils
     return 0;
   }
 
+  //check if input string are decimal number contains dot and 0 to 9
   static double is_decimal_number(string text)
   {
 
@@ -256,7 +266,7 @@ namespace Utils
     return 0;
   }
 
-
+//check if input string are integer number contains 0 to 9
   static int is_integer(string text)
     {
 
@@ -273,6 +283,7 @@ namespace Utils
       return 0;
     }
 
+  //generate new uuid string
   static string uuid()
   {
     boost::uuids::uuid uuids = boost::uuids::random_generator()();
@@ -281,6 +292,7 @@ namespace Utils
     return uuid;
   }
 
+  //return array of all month names
   static vector<std::string> get_all_month_names()
   {
     std::vector<std::string> months = {"January",
@@ -300,6 +312,7 @@ namespace Utils
 
   }
 
+  //return array of all month in short names
   static vector<std::string> get_all_month_short_names(){
 
     std::vector<std::string> months;
@@ -312,6 +325,7 @@ namespace Utils
 
   }
 
+  //removes delimiter from string
   static vector<std::string> get_array_from_str_by_delimiter(std::string text, std::string delimiter){
 
       std::vector<std::string> results;
@@ -324,6 +338,7 @@ namespace Utils
 
   }
 
+  //Check input text is json data
   static int is_json(std::string text)
   {
     stringstream inputStream(text);
@@ -345,6 +360,7 @@ namespace Utils
 
   }
 
+  //Format the given number as $1234567.12 if given number:1234567.12
   static string format_currency_general(string value, int number_of_digits = 0)
   {
     try{
@@ -352,14 +368,15 @@ namespace Utils
         std::ostringstream formatted;
         convert << std::setprecision(number_of_digits) << std::fixed ;
         convert <<  stod(value);
-	formatted << boost::format("%1%%2%") %"$" %convert.str();
-	return formatted.str();
+        formatted << boost::format("%1%%2%") %"$" %convert.str();
+        return formatted.str();
     }
     catch(const std::invalid_argument& x){
-	return "0";
+    	return "0";
     }
   }
 
+  //Format the given number as 1,234,567.12 if given number:1234567.12
   static string format_number(string value, int number_of_digit = 0)
   {
     try{
@@ -373,7 +390,7 @@ namespace Utils
         return converted.str();
     }
     catch(const std::invalid_argument& x){
-	return "0";
+    	return "0";
     }
   }
 
@@ -385,7 +402,7 @@ namespace Utils
      string do_grouping() const { return "\3"; }
   };
 
-
+//Format the given number as $ 1 234 567.12 if given number:1234567.12
   static string format_currency(string value, int number_of_digit = 0)
   {
     try{
@@ -399,10 +416,11 @@ namespace Utils
         return converted.str();
     }
     catch(const std::invalid_argument& x){
-	return "0";
+    	return "0";
     }
   }
 
+  //Validates a comma separated list of email addresses
   static bool invalid_email_address(std::string email)
   {
 
@@ -421,15 +439,16 @@ namespace Utils
     }
 
     if(pass == email_addresses.size()){
-	return 1;
+    	return 1;
     }
     else{
-	return 0;
+    	return 0;
     }
 
     return 0;
   }
 
+  /*some library constants lookups used to map tables correctly*/
   map<string,int> tn_numbers = boost::assign::map_list_of("pc_invoice_issue",1)
 							  ("pc_publication_instance_output",2)
 							  ("pc_tender_file",3)
@@ -444,6 +463,9 @@ namespace Utils
 			       {5,"pc_files"},
 			       {6,"pc_correspondance_history"}};
 
+  //Returns an integer which is used to identify a table name in the cms.
+  //This is used mostly for registering in the source table in cms::file and related objects.
+  //It just saves having to store the table name in the database and saves on space
   static int get_tn_table_number(string table_name)
   {
 	map<string,int>::iterator table;
@@ -455,6 +477,9 @@ namespace Utils
         return table->second;
   }
 
+  //Returns a string of the table that is encoded as number
+  //This is used mostly for registering in the source table in cms::file and related objects.
+  //It just saves having to store the table name in the database and saves on space
   static string get_tn_table_name(int table_number)
   {
 	map<int,string>::iterator number;
@@ -467,6 +492,8 @@ namespace Utils
         return number->second;
   }
 
+  //Save an scalar to file. The file name is returned. If no filename is specific,
+  //a temporary file is created and that filename is reutrns
   static std::string scalar2file(const char *content, std::string filename, bool binary){
 
 
@@ -523,6 +550,7 @@ namespace Utils
 
   }
 
+  //read a scalar file
   static void readscalar2file(const char * text, const char * origin, std::string filename){
     fstream fread;
     string line;
@@ -539,7 +567,11 @@ namespace Utils
     }
   }
 
-
+  //This internal method removes funky utf8 quotation marks and other funkiness
+  //so that the text can be parsed using borning Ascii loving template tool kit
+  //basically is substitutes funky ut8f quotes and greater than with the boring ascii variety.
+  //filemaker puts them in for some reason
+  //we use HTML::Entities, to put them in a form to easily find.
   static string fix_utf8_special_characters(string text)
   {
     if(text.empty()){
@@ -581,6 +613,7 @@ namespace Utils
     return text;
   }
 
+  //Format the given number as 12 345 678 910 if given number:1234567910
   static std::string format_abn(string number)
   {
     try{
@@ -604,6 +637,7 @@ namespace Utils
     }
   }
 
+  //Format the given number as 123 456 789 if given number:12345679
   static std::string format_acn(std::string number)
   {
       try{
@@ -627,7 +661,7 @@ namespace Utils
       }
   }
 
-
+  //Format the given number as 1234 567 891 if given number:1234567910
   static string format_phone(std::string number)
   {
     try{
@@ -648,6 +682,7 @@ namespace Utils
 
   }
 
+  //remove trailing zeros if given number is 123000.321000, then format to 123000.321
   static string format_peak(string number)
   {
     try{
@@ -665,6 +700,7 @@ namespace Utils
        }
   }
 
+  //Format the given date string to return 2018-01-01
   static string get_date_format_YYYY_MM_DD(string number)
   {
 	try{
@@ -701,6 +737,7 @@ namespace Utils
       return y;
   }
 
+  //Encode the given URL
   static std::string UrlEncode(const std::string& str)
   {
       std::string strTemp = "";
@@ -725,6 +762,7 @@ namespace Utils
       return strTemp;
   }
 
+  //Decode the given URL
   static std::string UrlDecode(const std::string& str)
   {
       std::string strTemp = "";
@@ -744,6 +782,9 @@ namespace Utils
       return strTemp;
   }
 
+  //This method will fix the URL encode replacing spaces and + by %20 and %2B then
+  //use the urlEncode
+  //this is necessary because then urlEncode replace space by +
   static string fix_url_encode(const std::string& url)
   {
 	    try{
@@ -764,6 +805,7 @@ namespace Utils
 	    }
   }
 
+  //Returns the number of days in months
   static void last_day_of_month()
   {
 		boost::gregorian::greg_year year(1400);
@@ -790,6 +832,7 @@ namespace Utils
 		 }
   }
 
+  //Returns the number of days there is in a given date month.
   static string days_in_date_month(std::string inputDate)
   {
 	  try{
@@ -819,6 +862,8 @@ namespace Utils
 
   }
 
+  //Format the given date string eg: 2019-12-13(format Ymd)
+  //then it return 13/12/2019 depend on output_format_date
   static string format_output_date(const std::string& input_date_str, std::string output_format_date)
   {
 	  try{
@@ -860,6 +905,7 @@ namespace Utils
 
   }
 
+  //Return the ordinal suffix of the day
   static std::string get_ordinal_suffix_day(int input_day)
   {
   	  if(input_day >= 1 && input_day <= 31 ){
@@ -883,6 +929,7 @@ namespace Utils
   	  }
   }
 
+  //returns duration in boost::gregorian::date_duration between 2 dates
 	static boost::gregorian::date_duration getDateDuration(std::string date1, std::string date2){
 
 		//check from and end input
@@ -906,6 +953,9 @@ namespace Utils
 		return duration;
 	}
 
+	//Returns a string with the correct TIMEZONE difference to be converted in a sql query
+	//this is usualy used by the CRM charts so we can convert the CRM GMT date time to the
+	//local timezone time.
 	static string get_mysql_timezone_convert_str(string input_date)
 	{
 		try
@@ -949,6 +999,7 @@ namespace Utils
 		string short_text;
 	};
 
+	//returns a structure of the previous financial quarter
 	static financial_quarter previous_quarter(string input_date)
 	{
 		  try{
@@ -1012,6 +1063,7 @@ namespace Utils
 		 int years;
 	};
 
+	//get duration in year, month, day between two date1 and date2 and both datetime must be yyyy-MM-dd
 	static datetime date_diff(const std::string& input_date1_str, const std::string& input_date2_str)
 	{
 		try{
@@ -1049,6 +1101,7 @@ namespace Utils
 
 	}
 
+	//This method will get total days between two date1 and date2 and both datetime must be yyyy-MM-dd
 	static int get_total_days(datetime dt)
 	{
 		int dt1;
@@ -1057,6 +1110,8 @@ namespace Utils
 		return dt1;
 	}
 
+	//get duration in year, month, day, hour, minute, second between two date1 and date2
+	//and both datetime must be yyyy-MM-dd hh:mm:ss
 	static datetime timestamp_diff(string input_date1_str, string input_date2_str)
 	{
 		try{
